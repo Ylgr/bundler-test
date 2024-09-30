@@ -80,7 +80,7 @@ async function main() {
     })
 
     const responseJson = await response.json();
-    console.log('responseJson.result: ', responseJson.result)
+    console.log('responseJson: ', responseJson)
     userOperation = {
         ...userOperation,
         callGasLimit: responseJson.result.callGasLimit,
