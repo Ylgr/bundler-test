@@ -65,3 +65,10 @@ export const AccountContract = (address) => {
 }
 
 export const accountLocal = privateKeyToAccount(process.env.PRIVATE_KEY);
+
+export const walletClient = createWalletClient({
+    chain: arbitrumSepolia,
+    account: accountLocal,
+    transport: http()
+})
+
