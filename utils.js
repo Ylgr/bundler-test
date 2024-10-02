@@ -6,6 +6,8 @@ import AccountFactoryAbi from './abi/AccountFactory.json' with { type: "json" };
 import AccountAbi from './abi/Account.json' with { type: "json" };
 import TokenPaymasterAbi from './abi/TokenPaymaster.json' with { type: "json" };
 import EntryPointAbi from './abi/EntryPoint.json' with { type: "json" };
+import JustClaimAbi from './abi/JustClaim.json' with { type: "json" };
+import TokenPayAfterPaymasterAbi from './abi/TokenPayAfterPaymaster.json' with { type: "json" };
 
 import dotenv from "dotenv";
 dotenv.config()
@@ -72,3 +74,12 @@ export const walletClient = createWalletClient({
     transport: http()
 })
 
+export const JustClaimConfig = {
+    address: process.env.JUST_CLAIM_ADDRESS,
+    abi: JustClaimAbi
+}
+
+export const TokenPayAfterPaymasterConfig = {
+    address: process.env.TOKEN_PAY_AFTER_PAYMASTER_ADDRESS,
+    abi: TokenPayAfterPaymasterAbi
+}
