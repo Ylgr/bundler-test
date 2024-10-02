@@ -5,6 +5,7 @@
   "license": "MIT",
   "dependencies": {
     "dotenv": "^16.4.5",
+    "permissionless": "^0.2.3",
     "viem": "^2.21.16"
   },
   "type": "module"

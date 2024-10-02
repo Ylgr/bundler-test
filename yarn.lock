@@ -75,6 +75,11 @@ isows@1.0.4:
   resolved "https://registry.yarnpkg.com/isows/-/isows-1.0.4.tgz#810cd0d90cc4995c26395d2aa4cfa4037ebdf061"
   integrity sha512-hEzjY+x9u9hPmBom9IIAqdJCwNLax+xrPb51vEPpERoFlIxgmZcHzsT5jKG06nvInKOBGvReAVz80Umed5CczQ==
 
+permissionless@^0.2.3:
+  version "0.2.3"
+  resolved "https://registry.yarnpkg.com/permissionless/-/permissionless-0.2.3.tgz#9a1c4ef4ba4056501c168db454def967194b7fc8"
+  integrity sha512-7OB7zGLeDNXGbiAxjoJA40bF8Zugf1GHFRDunXMgaN4Ft78ZOmkeuLEeZD7STfHOtUA0g03unZwQc8Q7m1+f7w==
+
 viem@^2.21.16:
   version "2.21.16"
   resolved "https://registry.yarnpkg.com/viem/-/viem-2.21.16.tgz#cf32200bbd1696bd6e86de7e1c12fcdfd77b63c1"

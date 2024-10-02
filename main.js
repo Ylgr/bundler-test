@@ -9,7 +9,10 @@ import {
 } from "./utils.js";
 import {encodeFunctionData, encodePacked, toBytes, toHex} from "viem";
 
-const bundlerEndpoint = process.env.STACKUP_API_KEY ? 'https://api.stackup.sh/v1/node/' + process.env.STACKUP_API_KEY : 'https://arb-sepolia.g.alchemy.com/v2/' + process.env.ALCHEMY_API_KEY;
+const bundlerEndpoint =
+    process.env.STACKUP_API_KEY ? 'https://api.stackup.sh/v1/node/' + process.env.STACKUP_API_KEY :
+        process.env.ALCHEMY_API_KEY ? 'https://arb-sepolia.g.alchemy.com/v2/' + process.env.ALCHEMY_API_KEY:
+            process.env.PIMLICO_API_KEY ? 'https://api.pimlico.io/v2/421614/rpc?apikey=' + process.env.PIMLICO_API_KEY : null;
 
 async function main() {
     console.log('dasdsdas')
@@ -60,8 +63,9 @@ async function main() {
         maxFeePerGas,
         maxPriorityFeePerGas,
         paymasterAndData,
-        signature
+        signature,
     }
+
     const sendOpRequest = {
         "jsonrpc": "2.0",
         "id": 1,
@@ -74,8 +78,14 @@ async function main() {
         ]
     }
     console.log('bundlerEndpoint: ', bundlerEndpoint)
-    const response = await fetch(bundlerEndpoint, {
+    console.log('sendOpRequest: ', sendOpRequest)
+    const response = await fetch(
+        bundlerEndpoint,
+        {
         method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
         body: JSON.stringify(sendOpRequest),
     })
 
@@ -113,6 +123,9 @@ async function main() {
     }
     const response2 = await fetch(bundlerEndpoint, {
         method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
         body: JSON.stringify(sendOpRequest2),
     })
     const responseJson2 = await response2.json();
