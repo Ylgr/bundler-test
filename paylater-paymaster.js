@@ -27,7 +27,19 @@ async function main() {
     }))
     console.log('nonce: ', nonce)
 
-    const initCode = '0x';
+    let initCode = '0x';
+    const senderDeployCode = await client.getCode({address: sender});
+    if(!senderDeployCode){
+        initCode = encodePacked(["bytes", "bytes"], [
+            encodePacked(["bytes"], [AccountFactoryConfig.address]),
+            encodeFunctionData({
+                abi: AccountFactoryConfig.abi,
+                functionName: 'createAccount',
+                args: [accountLocal.address, 0n]
+            })
+        ])
+    }
+    console.log('initCode: ', initCode)
 
     const callData = encodeFunctionData({
         abi: AccountConfig(sender).abi,
@@ -44,7 +56,7 @@ async function main() {
                 encodeFunctionData({
                     abi: JustClaimConfig.abi,
                     functionName: 'claim',
-                    args: [sender, parseEther("10000")],
+                    args: [sender, parseEther("1000")],
                 }),
             ],
         ],
@@ -52,7 +64,7 @@ async function main() {
 
     const callGasLimit = toHex(268692);
     const verificationGasLimit = toHex(75203);
-    const preVerificationGas = toHex(1000000n);
+    const preVerificationGas = toHex(1000000);
     const maxFeePerGas = toHex(157500000);
     const maxPriorityFeePerGas = toHex(5250000);
     const paymasterAndData = concatHex([TokenPayAfterPaymasterConfig.address, TokenPaymasterConfig.address]);
@@ -62,9 +74,9 @@ async function main() {
         nonce,
         initCode,
         callData,
-        // callGasLimit,
-        // verificationGasLimit,
-        // preVerificationGas,
+        callGasLimit,
+        verificationGasLimit,
+        preVerificationGas,
         maxFeePerGas,
         maxPriorityFeePerGas,
         paymasterAndData,
