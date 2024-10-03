@@ -33,13 +33,13 @@ async function main() {
         abi: AccountConfig(sender).abi,
         functionName: 'executeBatch',
         args: [
-            [TokenPaymasterConfig.address],
-            [0n],
+            [TokenPaymasterConfig.address, JustClaimConfig.address],
+            [0n, 0n],
             [
                 encodeFunctionData({
                     abi: TokenPaymasterConfig.abi,
                     functionName: 'approve',
-                    args: [accountLocal.address, maxUint256],
+                    args: [TokenPayAfterPaymasterConfig.address, maxUint256],
                 }),
                 encodeFunctionData({
                     abi: JustClaimConfig.abi,
@@ -62,9 +62,9 @@ async function main() {
         nonce,
         initCode,
         callData,
-        callGasLimit,
-        verificationGasLimit,
-        preVerificationGas,
+        // callGasLimit,
+        // verificationGasLimit,
+        // preVerificationGas,
         maxFeePerGas,
         maxPriorityFeePerGas,
         paymasterAndData,
