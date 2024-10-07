@@ -8,6 +8,7 @@ import TokenPaymasterAbi from './abi/TokenPaymaster.json' with { type: "json" };
 import EntryPointAbi from './abi/EntryPoint.json' with { type: "json" };
 import JustClaimAbi from './abi/JustClaim.json' with { type: "json" };
 import TokenPayAfterPaymasterAbi from './abi/TokenPayAfterPaymaster.json' with { type: "json" };
+import BaseFeeTestAbi from './abi/BaseFeeTest.json' with { type: "json" };
 
 import dotenv from "dotenv";
 dotenv.config()
@@ -82,4 +83,9 @@ export const JustClaimConfig = {
 export const TokenPayAfterPaymasterConfig = {
     address: process.env.TOKEN_PAY_AFTER_PAYMASTER_ADDRESS,
     abi: TokenPayAfterPaymasterAbi
+}
+
+export const BaseFeeTestConfig = {
+    address: process.env.BASE_FEE_TEST_ADDRESS,
+    abi: BaseFeeTestAbi
 }

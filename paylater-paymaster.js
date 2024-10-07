@@ -64,7 +64,7 @@ async function main() {
 
     const callGasLimit = toHex(268692);
     const verificationGasLimit = toHex(75203);
-    const preVerificationGas = toHex(1000000);
+    const preVerificationGas = toHex(3000000);
     const maxFeePerGas = toHex(157500000);
     const maxPriorityFeePerGas = toHex(5250000);
     const paymasterAndData = concatHex([TokenPayAfterPaymasterConfig.address, TokenPaymasterConfig.address]);
