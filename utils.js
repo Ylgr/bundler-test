@@ -11,6 +11,7 @@ import TokenPayAfterPaymasterAbi from './abi/TokenPayAfterPaymaster.json' with {
 import BaseFeeTestAbi from './abi/BaseFeeTest.json' with { type: "json" };
 
 import dotenv from "dotenv";
+import {ethers} from "ethers";
 dotenv.config()
 
 export const entryPoint = "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789";
@@ -89,3 +90,5 @@ export const BaseFeeTestConfig = {
     address: process.env.BASE_FEE_TEST_ADDRESS,
     abi: BaseFeeTestAbi
 }
+export const providerEthers = new ethers.providers.JsonRpcProvider(arbitrumSepolia.rpcUrls.default.http[0])
+export const EntryPointContractEthers = new ethers.Contract(entryPoint, EntryPointAbi, providerEthers)

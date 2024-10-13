@@ -5,9 +5,10 @@ import {
     accountLocal,
     client, dummySignature,
     entryPoint, EntryPointConfig,
-    EntryPointContract, TokenPaymasterConfig, walletClient
+    EntryPointContract, EntryPointContractEthers, providerEthers, TokenPaymasterConfig, walletClient
 } from "./utils.js";
 import {encodeFunctionData, encodePacked, toBytes, toHex} from "viem";
+import {ethers} from "ethers";
 
 const bundlerEndpoint =
     process.env.STACKUP_API_KEY ? 'https://api.stackup.sh/v1/node/' + process.env.STACKUP_API_KEY :
@@ -97,39 +98,49 @@ async function main() {
         verificationGasLimit: responseJson.result.verificationGasLimit,
         preVerificationGas: responseJson.result.preVerificationGas,
     }
-    const userOperationHash = await client.readContract({
-        ...EntryPointConfig,
-        functionName: 'getUserOpHash',
-        args: [userOperation],
-    })
-    console.log('userOperationHash: ', userOperationHash)
-    const signedSignature = await accountLocal.signMessage({message: {raw: toBytes(userOperationHash)}})
-    console.log('signedSignature: ', signedSignature)
-    userOperation = {
-        ...userOperation,
-        signature: encodePacked(['bytes'], [signedSignature]),
+    try {
+        const gasPrice = await providerEthers.getGasPrice()
+        await EntryPointContractEthers.callStatic.simulateHandleOp(userOperation, sender, callData, {gasPrice})
+    }catch (e) {
+        console.log('e.errorArgs: ', e.errorArgs)
+        console.log('e.errorArgs.paid: ', e.errorArgs.paid.toString())
+
     }
-    console.log('userOperation: ', userOperation)
-    const sendOpRequest2 = {
-        "jsonrpc": "2.0",
-        "id": 1,
-        "method": "eth_sendUserOperation",
-        "params": [
-            // UserOperation object
-            userOperation,
-            // Supported EntryPoint address
-            entryPoint
-        ]
-    }
-    const response2 = await fetch(bundlerEndpoint, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(sendOpRequest2),
-    })
-    const responseJson2 = await response2.json();
-    console.log('responseJson2: ', responseJson2)
+    // 1126440000000,
+    // 22582440000000,
+    // const userOperationHash = await client.readContract({
+    //     ...EntryPointConfig,
+    //     functionName: 'getUserOpHash',
+    //     args: [userOperation],
+    // })
+    // console.log('userOperationHash: ', userOperationHash)
+    // const signedSignature = await accountLocal.signMessage({message: {raw: toBytes(userOperationHash)}})
+    // console.log('signedSignature: ', signedSignature)
+    // userOperation = {
+    //     ...userOperation,
+    //     signature: encodePacked(['bytes'], [signedSignature]),
+    // }
+    // console.log('userOperation: ', userOperation)
+    // const sendOpRequest2 = {
+    //     "jsonrpc": "2.0",
+    //     "id": 1,
+    //     "method": "eth_sendUserOperation",
+    //     "params": [
+    //         // UserOperation object
+    //         userOperation,
+    //         // Supported EntryPoint address
+    //         entryPoint
+    //     ]
+    // }
+    // const response2 = await fetch(bundlerEndpoint, {
+    //     method: "POST",
+    //     headers: {
+    //         "Content-Type": "application/json",
+    //     },
+    //     body: JSON.stringify(sendOpRequest2),
+    // })
+    // const responseJson2 = await response2.json();
+    // console.log('responseJson2: ', responseJson2)
 }
 
 main().catch(console.error);
