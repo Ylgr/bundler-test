@@ -12,6 +12,7 @@ import BaseFeeTestAbi from './abi/BaseFeeTest.json' with { type: "json" };
 
 import dotenv from "dotenv";
 import {ethers} from "ethers";
+import {ERC20_PAYMASTER_ABI} from "./abi/Erc20Paymaster.js";
 dotenv.config()
 
 export const entryPoint = "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789";
@@ -92,3 +93,9 @@ export const BaseFeeTestConfig = {
 }
 export const providerEthers = new ethers.providers.JsonRpcProvider(arbitrumSepolia.rpcUrls.default.http[0])
 export const EntryPointContractEthers = new ethers.Contract(entryPoint, EntryPointAbi, providerEthers)
+
+export const erc20Paymaster = getContract({
+    abi: ERC20_PAYMASTER_ABI,
+    address: "0xA4664E31b1f9ea3EfB595AC33267a242aaeA182c",
+    client: client,
+})

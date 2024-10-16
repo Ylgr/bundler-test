@@ -1,25 +1,22 @@
 import {
     AccountConfig,
     AccountFactoryConfig,
-    AccountFactoryContract,
     accountLocal,
-    client, dummySignature,
-    entryPoint, EntryPointConfig,
-    EntryPointContract, EntryPointContractEthers, providerEthers, TokenPaymasterConfig, walletClient
+    client, dummySignature, entryPoint,
+    EntryPointConfig,
+    TokenPaymasterConfig
 } from "./utils.js";
-import {encodeFunctionData, encodePacked, toBytes, toHex} from "viem";
-import {ethers} from "ethers";
+import {encodeFunctionData, encodePacked, maxUint256, toBytes, toHex} from "viem";
 
 const bundlerEndpoint =
     process.env.STACKUP_API_KEY ? 'https://api.stackup.sh/v1/node/' + process.env.STACKUP_API_KEY :
         process.env.ALCHEMY_API_KEY ? 'https://arb-sepolia.g.alchemy.com/v2/' + process.env.ALCHEMY_API_KEY:
             process.env.PIMLICO_API_KEY ? 'https://api.pimlico.io/v2/421614/rpc?apikey=' + process.env.PIMLICO_API_KEY : null;
 
+// 0x0000000000000000000000000000000000000000
+const usdcPaymasterAddress = '0x8E257C874f150dF96D3F171563504d5e85366849'
 async function main() {
-    console.log('dasdsdas')
-    // console.log('accountLocal.address: ', accountLocal.address)
-    // const sender = await AccountFactoryContract.read.accountImplementation();
-    // const sender = await AccountFactoryContract.read.getAddress(accountLocal.address, 0n);
+    console.log('usdc-paymaster-permissionless')
     const sender = await client.readContract({
         ...AccountFactoryConfig,
         functionName: 'getAddress',
@@ -37,21 +34,25 @@ async function main() {
         abi: AccountConfig(sender).abi,
         functionName: 'execute',
         args: [
-            TokenPaymasterConfig.address,
+            '0x75faf114eafb1BDbe2F0316DF893fd58CE46AA4d',
             0n,
             encodeFunctionData({
                 abi: TokenPaymasterConfig.abi,
-                functionName: 'transfer',
-                args: [accountLocal.address, 100n],
+                functionName: 'approve',
+                args: [usdcPaymasterAddress, maxUint256],
+                // args: [usdcPaymasterAddress, 0],
             }),
-            ],
+        ],
     });
     const callGasLimit = toHex(268692);
     const verificationGasLimit = toHex(75203);
     const preVerificationGas = toHex(1000000n);
     const maxFeePerGas = toHex(157500000);
     const maxPriorityFeePerGas = toHex(5250000);
-    const paymasterAndData = TokenPaymasterConfig.address;
+
+    // const paymasterAndData = TokenPaymasterConfig.address;
+    const paymasterAndData = encodePacked(['address', 'bytes1'], ['0x8E257C874f150dF96D3F171563504d5e85366849', '0x00']);
+
     const signature = dummySignature;
     let userOperation = {
         sender,
@@ -83,12 +84,12 @@ async function main() {
     const response = await fetch(
         bundlerEndpoint,
         {
-        method: "POST",
+            method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
-        body: JSON.stringify(sendOpRequest),
-    })
+            body: JSON.stringify(sendOpRequest),
+        })
 
     const responseJson = await response.json();
     console.log('responseJson: ', responseJson)
@@ -98,14 +99,7 @@ async function main() {
         verificationGasLimit: responseJson.result.verificationGasLimit,
         preVerificationGas: responseJson.result.preVerificationGas,
     }
-    // try {
-    //     const gasPrice = await providerEthers.getGasPrice()
-    //     await EntryPointContractEthers.callStatic.simulateHandleOp(userOperation, sender, callData, {gasPrice})
-    // }catch (e) {
-    //     console.log('e.errorArgs: ', e.errorArgs)
-    //     console.log('e.errorArgs.paid: ', e.errorArgs.paid.toString())
-    //
-    // }
+
     const userOperationHash = await client.readContract({
         ...EntryPointConfig,
         functionName: 'getUserOpHash',
