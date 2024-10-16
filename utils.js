@@ -14,7 +14,7 @@ import dotenv from "dotenv";
 import {ethers} from "ethers";
 import {ERC20_PAYMASTER_ABI} from "./abi/Erc20Paymaster.js";
 dotenv.config()
-
+export const currentChain = arbitrumSepolia;
 export const entryPoint = "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789";
 
 export const AccountFactoryConfig = {
@@ -43,7 +43,7 @@ export const EntryPointConfig = {
 export const dummySignature = "0x0da0e8ffd79a479ff1d3abbd2259127c14d9ef8e0787632255619f380fac86a81e879b4699dadeead1bfa4e75ce6784df9eb2c6fa827a3371527d756455473ae1b"
 
 export const client = createPublicClient({
-    chain: arbitrumSepolia,
+    chain: currentChain,
     transport: http()
 })
 
@@ -72,7 +72,7 @@ export const AccountContract = (address) => {
 export const accountLocal = privateKeyToAccount(process.env.PRIVATE_KEY);
 
 export const walletClient = createWalletClient({
-    chain: arbitrumSepolia,
+    chain: currentChain,
     account: accountLocal,
     transport: http()
 })
@@ -91,7 +91,7 @@ export const BaseFeeTestConfig = {
     address: process.env.BASE_FEE_TEST_ADDRESS,
     abi: BaseFeeTestAbi
 }
-export const providerEthers = new ethers.providers.JsonRpcProvider(arbitrumSepolia.rpcUrls.default.http[0])
+export const providerEthers = new ethers.providers.JsonRpcProvider(currentChain.rpcUrls.default.http[0])
 export const EntryPointContractEthers = new ethers.Contract(entryPoint, EntryPointAbi, providerEthers)
 
 export const erc20Paymaster = getContract({
