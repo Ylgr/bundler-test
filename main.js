@@ -32,7 +32,19 @@ async function main() {
         args: [sender, 0n],
     }))
     console.log('nonce: ', nonce)
-    const initCode = '0x';
+    let initCode = '0x';
+    const senderDeployCode = await client.getCode({address: sender});
+    if(!senderDeployCode){
+        initCode = encodePacked(["bytes", "bytes"], [
+            encodePacked(["bytes"], [AccountFactoryConfig.address]),
+            encodeFunctionData({
+                abi: AccountFactoryConfig.abi,
+                functionName: 'createAccount',
+                args: [accountLocal.address, 0n]
+            })
+        ])
+    }
+    console.log('initCode: ', initCode)
     const callData = encodeFunctionData({
         abi: AccountConfig(sender).abi,
         functionName: 'execute',
