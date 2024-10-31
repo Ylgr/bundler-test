@@ -1,4 +1,4 @@
-import {arbitrumSepolia} from "viem/chains";
+import {arbitrumSepolia, sepolia} from "viem/chains";
 import {createPublicClient, createWalletClient, getContract, http} from "viem";
 import {privateKeyToAccount} from "viem/accounts";
 
@@ -16,6 +16,7 @@ import {ERC20_PAYMASTER_ABI} from "./abi/Erc20Paymaster.js";
 import {entryPoint07Abi, entryPoint07Address} from "viem/account-abstraction";
 dotenv.config()
 export const currentChain = arbitrumSepolia;
+// export const currentChain = sepolia;
 export const entryPoint = "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789";
 
 export const AccountFactoryConfig = {
@@ -69,7 +70,6 @@ export const AccountContract = (address) => {
         client
     });
 }
-
 export const accountLocal = privateKeyToAccount(process.env.PRIVATE_KEY);
 
 export const walletClient = createWalletClient({
@@ -128,3 +128,12 @@ export const AccountFactory07Config = {
     address: process.env.ACCOUNT_FACTORY_07_ADDRESS,
     abi: AccountFactoryAbi
 }
+
+
+export const bundlerEndpoint =
+    process.env.STACKUP_API_KEY ? 'https://api.stackup.sh/v1/node/' + process.env.STACKUP_API_KEY :
+        process.env.ALCHEMY_API_KEY ? 'https://arb-sepolia.g.alchemy.com/v2/' + process.env.ALCHEMY_API_KEY:
+            process.env.PIMLICO_API_KEY ? 'https://api.pimlico.io/v2/421614/rpc?apikey=' + process.env.PIMLICO_API_KEY : null;
+
+// export const pimlicoBundlerEndpoint = 'https://api.pimlico.io/v2/421614/rpc?apikey=' + process.env.PIMLICO_API_KEY; // arb-sepolia
+export const pimlicoBundlerEndpoint = 'https://api.pimlico.io/v2/11155111/rpc?apikey=' + process.env.PIMLICO_API_KEY; // sepolia

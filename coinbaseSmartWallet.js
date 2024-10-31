@@ -8,7 +8,7 @@ import {
     EntryPointConfig,
     TokenPaymasterConfig
 } from "./utils.js";
-import {encodeFunctionData, http, maxUint256, toHex} from "viem";
+import {encodeFunctionData, http, maxUint256, pad, toHex} from "viem";
 import {createPimlicoClient} from "permissionless/clients/pimlico";
 import {toSimpleSmartAccount} from "permissionless/accounts";
 
@@ -20,6 +20,7 @@ const bundlerEndpoint =
 const usdcAddress = '0x75faf114eafb1BDbe2F0316DF893fd58CE46AA4d'
 
 async function main() {
+    console.log('local public key: ', pad(accountLocal.address))
     const account = await toCoinbaseSmartAccount({
         client,
         owners: [accountLocal],
@@ -29,7 +30,7 @@ async function main() {
     //     client,
     //     owner: accountLocal,
     //     factoryAddress: AccountFactoryConfig.address,
-    //     address: '0x227c204eA113955a37c36F90bee1dC7204cf697e',
+    //     // address: '0x227c204eA113955a37c36F90bee1dC7204cf697e',
     //     entryPoint: {
     //         address: entryPoint06Address,
     //         version: "0.6",
@@ -37,10 +38,6 @@ async function main() {
     // })
     console.log('account: ', account)
 
-    // const account = await toCoinbaseSmartAccount({
-    //     client,
-    //     owners: [accountLocal],
-    // })
 
     const pimlicoClient = createPimlicoClient({
         chain: currentChain,
@@ -53,7 +50,7 @@ async function main() {
 
     const bundlerClient = createBundlerClient({
         client,
-        transport:  http(bundlerEndpoint),
+        transport:  http('https://api.pimlico.io/v2/421614/rpc?apikey=' + process.env.PIMLICO_API_KEY),
         account,
         paymaster: pimlicoClient,
     })
@@ -63,54 +60,42 @@ async function main() {
         functionName: 'getNonce',
         args: [account.address, 0n],
     })
+    console.log('nonce: ', nonce)
 
-    // const userOperation = await bundlerClient.prepareUserOperation({
+    const userOperation = await bundlerClient.prepareUserOperation({
+        calls: [{
+            to: '0xeaBcd21B75349c59a4177E10ed17FBf2955fE697',
+            value: 0n,
+        }],
+            paymasterContext: {
+                token: usdcAddress,
+            },
+        nonce: nonce,
+    })
+    console.log('userOperation: ', userOperation)
+
+
+    // const hash = await bundlerClient.sendUserOperation({
     //     calls: [{
-    //         to: '0xeaBcd21B75349c59a4177E10ed17FBf2955fE697',
+    //         to: usdcAddress,
     //         value: 0n,
-    //     }],
-    //         paymasterContext: {
-    //             token: usdcAddress,
-    //         },
-    //     nonce: nonce,
-    // })
-    // console.log('userOperation: ', userOperation)
-
-    // const callData = encodeFunctionData({
-    //     abi: AccountConfig(account.address).abi,
-    //     functionName: 'execute',
-    //     args: [
-    //         usdcAddress,
-    //         0n,
-    //         encodeFunctionData({
+    //         data: encodeFunctionData({
     //             abi: TokenPaymasterConfig.abi,
     //             functionName: 'approve',
     //             args: ['0x00000000000000fb866daaa79352cc568a005d96', maxUint256],
     //             // args: [usdcPaymasterAddress, 0],
-    //         }),
-    //     ],
+    //         })
+    //     }],
+    //     nonce: nonce,
+    //     // paymasterAndData: TokenPaymasterConfig.address,
+    //     paymasterContext: {
+    //         token: usdcAddress,
+    //     },
     // });
-    const hash = await bundlerClient.sendUserOperation({
-        calls: [{
-            to: usdcAddress,
-            value: 0n,
-            data: encodeFunctionData({
-                abi: TokenPaymasterConfig.abi,
-                functionName: 'approve',
-                args: ['0x00000000000000fb866daaa79352cc568a005d96', maxUint256],
-                // args: [usdcPaymasterAddress, 0],
-            })
-        }],
-        nonce: nonce,
-        // paymasterAndData: TokenPaymasterConfig.address,
-        paymasterContext: {
-            token: usdcAddress,
-        },
-    });
-    console.log('hash: ', hash)
-    const receipt = await bundlerClient.waitForUserOperationReceipt({
-        hash
-    })
+    // console.log('hash: ', hash)
+    // const receipt = await bundlerClient.waitForUserOperationReceipt({
+    //     hash
+    // })
 }
 
 main().catch(console.error);
